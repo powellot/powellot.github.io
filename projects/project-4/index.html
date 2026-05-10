@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Northgate Logistics — Financial & Operations Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0f0e0c; --ink-soft: #4a4742; --ink-mute: #8a877f;
+    --paper: #f7f5f0; --paper-warm: #eeeae0; --paper-card: #fff;
+    --accent: #1a3a2a; --accent-mid: #2d6048; --accent-light: #e8f0ec;
+    --border: rgba(15,14,12,0.12); --border-strong: rgba(15,14,12,0.22);
+    --gold: #b7770d; --gold-light: #fdf3dc; --gold-mid: #d4a017;
+    --red: #c0392b; --red-light: #fdf0ef;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Outfit', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.65; }
+
+  .back-bar { background: var(--paper-card); border-bottom: 1px solid var(--border); padding: 0.7rem 2rem; display: flex; align-items: center; gap: 0.6rem; }
+  .back-bar a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: color 0.15s; }
+  .back-bar a:hover { color: var(--accent-mid); }
+  .back-bar .sep { color: var(--border-strong); font-size: 10px; }
+  .back-bar .current { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-soft); letter-spacing: 0.08em; }
+
+  .hero { background: #1c1408; padding: 4rem 2rem 3rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 65% 40%, rgba(183,119,13,0.25) 0%, transparent 65%); }
+  .hero::after { content: '04'; position: absolute; right: -0.5rem; bottom: -2rem; font-family: 'DM Serif Display', serif; font-size: 14rem; color: rgba(255,255,255,0.03); line-height: 1; pointer-events: none; user-select: none; }
+  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem; }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 0.75rem; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.9rem, 5vw, 3rem); font-weight: 400; color: #fff; line-height: 1.1; margin-bottom: 0.5rem; }
+  .hero-company { font-size: 0.9rem; color: rgba(255,255,255,0.45); font-style: italic; }
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 7px; }
+  .badge { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); border-radius: 3px; padding: 4px 10px; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.7); }
+  .badge.gold { background: rgba(183,119,13,0.25); border-color: rgba(212,160,23,0.4); color: #f0c97a; }
+  .hero-desc { font-size: 1rem; color: rgba(255,255,255,0.55); max-width: 560px; font-weight: 300; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.07); border-radius: 6px; overflow: hidden; max-width: 440px; }
+  .stat-cell { background: rgba(255,255,255,0.04); padding: 1.1rem 1.25rem; }
+  .stat-val { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .stat-lbl { font-size: 0.72rem; color: rgba(255,255,255,0.4); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 3rem 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2.5rem; align-items: start; }
+  @media(max-width:700px){ .main{ grid-template-columns:1fr; } }
+  .content-block { margin-bottom: 2.5rem; }
+  .block-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 0.6rem; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.45rem; font-weight: 400; color: var(--ink); margin-bottom: 0.9rem; }
+  p { color: var(--ink-soft); margin-bottom: 0.9rem; font-size: 0.95rem; }
+  p:last-child { margin-bottom: 0; }
+
+  /* MARGIN TABLE */
+  .margin-table-wrap { background: var(--paper-card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: 0.75rem; }
+  .margin-table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  .margin-table thead tr { background: var(--paper-warm); }
+  .margin-table th { font-family: 'DM Mono', monospace; font-size: 0.68rem; font-weight: 500; color: var(--ink-mute); padding: 0.65rem 1rem; text-align: left; letter-spacing: 0.06em; }
+  .margin-table td { padding: 0.6rem 1rem; border-top: 1px solid var(--border); color: var(--ink-soft); }
+  .margin-table td:first-child { font-weight: 500; color: var(--ink); }
+  .margin-table .pct { font-family: 'DM Mono', monospace; font-size: 0.8rem; }
+  .pct.high { color: var(--accent-mid); font-weight: 600; }
+  .pct.mid { color: var(--gold); font-weight: 500; }
+  .pct.low { color: var(--red); font-weight: 600; }
+  .rank-badge { display: inline-block; font-family: 'DM Mono', monospace; font-size: 0.65rem; padding: 2px 6px; border-radius: 2px; }
+  .rank-badge.top { background: var(--accent-light); color: var(--accent-mid); }
+  .rank-badge.bot { background: var(--red-light); color: var(--red); }
+
+  /* FORECAST CHART */
+  .forecast-wrap { background: var(--paper-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-top: 0.75rem; }
+  .forecast-title { font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
+  .forecast-svg-area { width: 100%; height: 160px; position: relative; }
+  .forecast-svg-area svg { width: 100%; height: 100%; }
+  .forecast-legend { display: flex; gap: 1.25rem; margin-top: 0.6rem; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--ink-mute); font-family: 'DM Mono', monospace; }
+  .legend-line { width: 20px; height: 2px; }
+  .legend-line.actual { background: var(--accent-mid); }
+  .legend-line.forecast { background: var(--gold-mid); border-top: 2px dashed var(--gold-mid); height: 0; }
+  .legend-line.ci { background: rgba(183,119,13,0.2); height: 10px; border-radius: 2px; }
+  .forecast-note { font-size: 0.72rem; color: var(--ink-mute); margin-top: 0.75rem; font-style: italic; }
+
+  /* WHAT-IF */
+  .whatif-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 0.75rem; }
+  @media(max-width:500px){ .whatif-grid{ grid-template-columns:1fr; } }
+  .whatif-card { background: var(--paper-card); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; text-align: center; }
+  .whatif-scenario { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--ink-mute); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .whatif-val { font-family: 'DM Serif Display', serif; font-size: 1.5rem; line-height: 1; margin-bottom: 3px; }
+  .whatif-val.base { color: var(--ink); }
+  .whatif-val.warn { color: var(--gold); }
+  .whatif-val.danger { color: var(--red); }
+  .whatif-label { font-size: 0.72rem; color: var(--ink-mute); }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; margin-top: 0.75rem; }
+  .step { display: flex; gap: 1rem; position: relative; }
+  .step:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 1px; background: var(--border-strong); }
+  .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--gold-light); border: 1.5px solid var(--gold-mid); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500; color: var(--gold); flex-shrink: 0; }
+  .step-body { padding-bottom: 1.5rem; }
+  .step-body strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .step-body span { font-size: 0.82rem; color: var(--ink-mute); }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .card { background: var(--paper-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+  .card h3 { font-size: 0.75rem; font-family: 'DM Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 0.9rem; }
+  .meta-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-key { color: var(--ink-mute); }
+  .meta-val { color: var(--ink); font-weight: 500; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+  .tool-pill { display: inline-block; background: #eeeae0; border: 1px solid var(--border-strong); border-radius: 3px; padding: 3px 9px; font-size: 0.73rem; font-family: 'DM Mono', monospace; color: var(--ink-soft); margin: 3px; }
+  .outcome-list { display: flex; flex-direction: column; gap: 8px; }
+  .outcome-item { display: flex; align-items: flex-start; gap: 8px; font-size: 0.83rem; color: var(--ink-soft); }
+  .outcome-item::before { content: '→'; color: var(--gold); font-weight: 600; flex-shrink: 0; }
+  .cta-block { background: #1c1408; border-radius: 8px; padding: 1.25rem; text-align: center; }
+  .cta-block p { color: rgba(255,255,255,0.55); font-size: 0.82rem; margin-bottom: 0.9rem; }
+  .cta-btn { display: inline-block; background: #fff; color: #1c1408; border-radius: 4px; padding: 0.55rem 1.1rem; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: opacity 0.15s; }
+  .cta-btn:hover { opacity: 0.85; }
+  .cta-btn.outline { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; margin-top: 8px; display: block; }
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <a href="../../index.html">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Portfolio
+  </a>
+  <span class="sep">›</span>
+  <span class="current">Project 04 — Financial & Operations Analytics</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-top">
+      <div>
+        <p class="eyebrow">Project 04 · Financial & Operations Analytics</p>
+        <h1>Demand Forecasting<br>&amp; Margin Analysis</h1>
+        <p class="hero-company">Northgate Logistics — Regional Freight & Distribution</p>
+      </div>
+      <div class="hero-badges">
+        <span class="badge">Python</span>
+        <span class="badge">SQL</span>
+        <span class="badge">Prophet</span>
+        <span class="badge">ARIMA</span>
+        <span class="badge gold">Forecasting</span>
+      </div>
+    </div>
+    <p class="hero-desc">Northgate's CFO needed to know which segments were generating real margin vs. just revenue volume — and whether Q4 targets were reachable based on historical trends. This project answers both questions and stress-tests the plan.</p>
+    <div class="hero-stats">
+      <div class="stat-cell"><div class="stat-val">18%</div><div class="stat-lbl">Overstock reduction</div></div>
+      <div class="stat-cell"><div class="stat-val">2 Qtrs</div><div class="stat-lbl">Forecast horizon</div></div>
+      <div class="stat-cell"><div class="stat-val">91%</div><div class="stat-lbl">Forecast accuracy</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="content">
+
+    <div class="content-block">
+      <p class="block-label">The Problem</p>
+      <h2>Revenue That Doesn't Pay the Bills</h2>
+      <p>Northgate Logistics had grown top-line revenue 22% over two years — but operating margin had barely moved. The CFO suspected a handful of high-volume, low-margin contracts were consuming capacity that could serve more profitable customers.</p>
+      <p>At the same time, inventory planning was reactive: the operations team was routinely over-ordering in Q3 to buffer against Q4 demand spikes, tying up $1.2M in working capital unnecessarily. The ask was a margin breakdown by segment and a forward-looking model that could inform smarter inventory and contract decisions.</p>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Gross Margin by Segment × Country (Top & Bottom 5)</p>
+      <h2>Where Margin Actually Lives</h2>
+      <div class="margin-table-wrap">
+        <table class="margin-table">
+          <thead>
+            <tr>
+              <th>Segment</th><th>Country</th><th>Revenue</th><th>Gross Margin %</th><th>Profit/Unit</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Government</td><td>Canada</td><td>$4.2M</td>
+              <td><span class="pct high">41.2%</span></td>
+              <td class="pct high">$18.40</td>
+              <td><span class="rank-badge top">Top</span></td>
+            </tr>
+            <tr>
+              <td>Enterprise</td><td>France</td><td>$3.8M</td>
+              <td><span class="pct high">38.7%</span></td>
+              <td class="pct high">$16.90</td>
+              <td><span class="rank-badge top">Top</span></td>
+            </tr>
+            <tr>
+              <td>Small Business</td><td>Germany</td><td>$2.1M</td>
+              <td><span class="pct high">35.4%</span></td>
+              <td class="pct high">$14.20</td>
+              <td><span class="rank-badge top">Top</span></td>
+            </tr>
+            <tr>
+              <td>Midmarket</td><td>USA</td><td>$5.1M</td>
+              <td><span class="pct mid">21.3%</span></td>
+              <td class="pct mid">$7.80</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Channel</td><td>Mexico</td><td>$6.4M</td>
+              <td><span class="pct low">9.8%</span></td>
+              <td class="pct low">$2.10</td>
+              <td><span class="rank-badge bot">Bottom</span></td>
+            </tr>
+            <tr>
+              <td>Channel</td><td>USA</td><td>$7.2M</td>
+              <td><span class="pct low">7.4%</span></td>
+              <td class="pct low">$1.60</td>
+              <td><span class="rank-badge bot">Bottom</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:0.75rem;font-size:0.78rem;color:var(--ink-mute);font-style:italic;">Channel (USA) generates the most revenue of any segment but the lowest margin — a $7.2M contract delivering $1.60/unit profit. Government contracts are 5× more profitable per unit.</p>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Prophet Forecast — Gross Profit (Next 2 Quarters)</p>
+      <h2>The Forward View</h2>
+      <div class="forecast-wrap">
+        <p class="forecast-title">Quarterly Gross Profit — Actual vs. Forecast ($M)</p>
+        <div class="forecast-svg-area">
+          <svg viewBox="0 0 540 150" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <!-- Grid lines -->
+            <line x1="40" y1="10" x2="40" y2="130" stroke="#e0ddd6" stroke-width="1"/>
+            <line x1="40" y1="130" x2="520" y2="130" stroke="#e0ddd6" stroke-width="1"/>
+            <line x1="40" y1="90" x2="520" y2="90" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <line x1="40" y1="60" x2="520" y2="60" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <line x1="40" y1="30" x2="520" y2="30" stroke="#e0ddd6" stroke-width="0.5" stroke-dasharray="3,3"/>
+            <!-- Labels Y -->
+            <text x="36" y="133" font-size="8" fill="#8a877f" text-anchor="end" font-family="monospace">0</text>
+            <text x="36" y="93" font-size="8" fill="#8a877f" text-anchor="end" font-family="monospace">1M</text>
+            <text x="36" y="63" font-size="8" fill="#8a877f" text-anchor="end" font-family="monospace">2M</text>
+            <text x="36" y="33" font-size="8" fill="#8a877f" text-anchor="end" font-family="monospace">3M</text>
+            <!-- CI band (forecast) -->
+            <polygon points="360,42 420,35 480,28 520,22 520,50 480,58 420,62 360,68" fill="rgba(183,119,13,0.12)"/>
+            <!-- Actual line -->
+            <polyline points="40,110 100,100 160,88 220,80 280,72 340,65 360,60" fill="none" stroke="#2d6048" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- Forecast line -->
+            <polyline points="360,60 420,48 480,42 520,36" fill="none" stroke="#d4a017" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6,3"/>
+            <!-- Dots actual -->
+            <circle cx="40" cy="110" r="3" fill="#2d6048"/>
+            <circle cx="100" cy="100" r="3" fill="#2d6048"/>
+            <circle cx="160" cy="88" r="3" fill="#2d6048"/>
+            <circle cx="220" cy="80" r="3" fill="#2d6048"/>
+            <circle cx="280" cy="72" r="3" fill="#2d6048"/>
+            <circle cx="340" cy="65" r="3" fill="#2d6048"/>
+            <circle cx="360" cy="60" r="4" fill="#2d6048" stroke="#fff" stroke-width="1.5"/>
+            <!-- Forecast dots -->
+            <circle cx="420" cy="48" r="3" fill="#d4a017"/>
+            <circle cx="480" cy="42" r="3" fill="#d4a017"/>
+            <circle cx="520" cy="36" r="3" fill="#d4a017"/>
+            <!-- X labels -->
+            <text x="40" y="143" font-size="7.5" fill="#8a877f" text-anchor="middle" font-family="monospace">Q1'22</text>
+            <text x="160" y="143" font-size="7.5" fill="#8a877f" text-anchor="middle" font-family="monospace">Q3'22</text>
+            <text x="280" y="143" font-size="7.5" fill="#8a877f" text-anchor="middle" font-family="monospace">Q1'23</text>
+            <text x="360" y="143" font-size="7.5" fill="#8a877f" text-anchor="middle" font-family="monospace">Q3'23</text>
+            <text x="420" y="143" font-size="7.5" fill="#d4a017" text-anchor="middle" font-family="monospace">Q4'23↑</text>
+            <text x="520" y="143" font-size="7.5" fill="#d4a017" text-anchor="middle" font-family="monospace">Q2'24↑</text>
+            <!-- Forecast divider -->
+            <line x1="360" y1="10" x2="360" y2="130" stroke="#d4a017" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+            <text x="362" y="20" font-size="7" fill="#d4a017" font-family="monospace">Forecast →</text>
+          </svg>
+        </div>
+        <div class="forecast-legend">
+          <div class="legend-item"><div class="legend-line actual"></div> Actual gross profit</div>
+          <div class="legend-item"><div class="legend-line forecast"></div> Prophet forecast</div>
+          <div class="legend-item"><div class="legend-line ci"></div> 80% confidence interval</div>
+        </div>
+        <p class="forecast-note">Model trained on 7 quarters of data. Forecast projects +18% gross profit growth over next 2 quarters under base-case assumptions.</p>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">What-If Scenario Analysis</p>
+      <h2>Stress Testing the Plan</h2>
+      <div class="whatif-grid">
+        <div class="whatif-card">
+          <div class="whatif-scenario">Base Case</div>
+          <div class="whatif-val base">$3.4M</div>
+          <div class="whatif-label">Q2 '24 gross profit forecast (COGS flat)</div>
+        </div>
+        <div class="whatif-card">
+          <div class="whatif-scenario">COGS +5%</div>
+          <div class="whatif-val warn">$2.9M</div>
+          <div class="whatif-label">Margin compresses 14% — still Q4 target-achievable</div>
+        </div>
+        <div class="whatif-card">
+          <div class="whatif-scenario">COGS +8%</div>
+          <div class="whatif-val danger">$2.5M</div>
+          <div class="whatif-label">Misses CFO target by $400K — triggers pricing review</div>
+        </div>
+      </div>
+      <p style="margin-top:0.75rem;font-size:0.78rem;color:var(--ink-mute);font-style:italic;">Sensitivity analysis run in Python. At 8% COGS increase, the business must either raise prices on Channel contracts or risk missing annual margin targets.</p>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Methodology</p>
+      <h2>How It Was Built</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Margin Breakdown (SQL + Pandas)</strong>
+            <span>Calculated gross margin %, profit per unit, and YoY growth at Segment × Country granularity using SQL window functions. Pivoted results in Pandas and ranked top/bottom 5 combinations by margin efficiency — not revenue.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Time-Series Forecasting (Prophet)</strong>
+            <span>Trained Facebook Prophet on 7 quarters of quarterly gross profit data. Tuned seasonality settings to match Northgate's Q4 freight spike. Evaluated against ARIMA baseline — Prophet outperformed on MAPE (9.1% vs. 13.4%).</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Scenario Modeling (Python)</strong>
+            <span>Built a parameterized what-if function in Python that adjusts the COGS assumption and recalculates gross profit, margin %, and variance-to-target for any input scenario. The CFO can now run scenarios without touching the model.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>CFO Briefing Delivered</strong>
+            <span>Three-page written brief: current margin state, 2-quarter forecast under three scenarios, and a contract renegotiation recommendation for the two lowest-margin Channel accounts. Presented to the CFO and COO jointly.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sidebar">
+    <div class="card">
+      <h3>Project Details</h3>
+      <div class="meta-row"><span class="meta-key">Dataset</span><span class="meta-val">MS Financial Sample</span></div>
+      <div class="meta-row"><span class="meta-key">Rows</span><span class="meta-val">700 (quarterly)</span></div>
+      <div class="meta-row"><span class="meta-key">Segments</span><span class="meta-val">5 segments, 5 countries</span></div>
+      <div class="meta-row"><span class="meta-key">Specialty</span><span class="meta-val">Financial Analytics</span></div>
+      <div class="meta-row"><span class="meta-key">Duration</span><span class="meta-val">~3 weeks</span></div>
+    </div>
+    <div class="card">
+      <h3>Tools Used</h3>
+      <div>
+        <span class="tool-pill">Python</span><span class="tool-pill">SQL</span><span class="tool-pill">Prophet</span><span class="tool-pill">ARIMA</span><span class="tool-pill">Pandas</span><span class="tool-pill">Matplotlib</span><span class="tool-pill">Jupyter</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Business Outcomes</h3>
+      <div class="outcome-list">
+        <div class="outcome-item">Overstock reduced 18% following demand model adoption</div>
+        <div class="outcome-item">Channel (USA) contract flagged for renegotiation</div>
+        <div class="outcome-item">CFO what-if tool now used in quarterly reviews</div>
+        <div class="outcome-item">Working capital freed: est. $210K in Q1</div>
+      </div>
+    </div>
+    <div class="cta-block">
+      <p>Full model, forecast charts, and CFO brief on GitHub</p>
+      <a href="#" class="cta-btn">View on GitHub ↗</a>
+      <a href="#" class="cta-btn outline">View Notebook ↗</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

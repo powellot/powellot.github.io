@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calloway Group — HR & People Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0f0e0c; --ink-soft: #4a4742; --ink-mute: #8a877f;
+    --paper: #f7f5f0; --paper-warm: #eeeae0; --paper-card: #fff;
+    --accent: #1a3a2a; --accent-mid: #2d6048; --accent-light: #e8f0ec;
+    --border: rgba(15,14,12,0.12); --border-strong: rgba(15,14,12,0.22);
+    --purple: #6c3483; --purple-light: #f5eef8; --purple-mid: #884ea0;
+    --red: #c0392b; --red-light: #fdf0ef;
+    --amber: #d68910; --amber-light: #fef9ee;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Outfit', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.65; }
+
+  .back-bar { background: var(--paper-card); border-bottom: 1px solid var(--border); padding: 0.7rem 2rem; display: flex; align-items: center; gap: 0.6rem; }
+  .back-bar a { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: color 0.15s; }
+  .back-bar a:hover { color: var(--accent-mid); }
+  .back-bar .sep { color: var(--border-strong); font-size: 10px; }
+  .back-bar .current { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-soft); letter-spacing: 0.08em; }
+
+  .hero { background: #2c1654; padding: 4rem 2rem 3rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 60%, rgba(108,52,131,0.5) 0%, transparent 65%); }
+  .hero::after { content: '03'; position: absolute; right: -0.5rem; bottom: -2rem; font-family: 'DM Serif Display', serif; font-size: 14rem; color: rgba(255,255,255,0.03); line-height: 1; pointer-events: none; user-select: none; }
+  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem; }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 0.75rem; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.9rem, 5vw, 3rem); font-weight: 400; color: #fff; line-height: 1.1; margin-bottom: 0.5rem; }
+  .hero-company { font-size: 0.9rem; color: rgba(255,255,255,0.5); font-style: italic; }
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 7px; }
+  .badge { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; padding: 4px 10px; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.75); }
+  .hero-desc { font-size: 1rem; color: rgba(255,255,255,0.6); max-width: 560px; font-weight: 300; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; max-width: 440px; }
+  .stat-cell { background: rgba(255,255,255,0.04); padding: 1.1rem 1.25rem; }
+  .stat-val { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .stat-lbl { font-size: 0.72rem; color: rgba(255,255,255,0.45); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 3rem 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2.5rem; align-items: start; }
+  @media(max-width:700px){ .main{ grid-template-columns:1fr; } }
+  .content-block { margin-bottom: 2.5rem; }
+  .block-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 0.6rem; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.45rem; font-weight: 400; color: var(--ink); margin-bottom: 0.9rem; }
+  p { color: var(--ink-soft); margin-bottom: 0.9rem; font-size: 0.95rem; }
+  p:last-child { margin-bottom: 0; }
+
+  /* HEATMAP GRID */
+  .heatmap-wrap { background: var(--paper-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-top: 0.75rem; overflow-x: auto; }
+  .heatmap-title { font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
+  .heatmap-table { border-collapse: collapse; width: 100%; }
+  .heatmap-table th { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--ink-mute); font-weight: 400; padding: 4px 8px; text-align: center; }
+  .heatmap-table td { font-family: 'DM Mono', monospace; font-size: 0.7rem; padding: 7px 6px; text-align: center; border-radius: 2px; font-weight: 500; }
+  .heatmap-table .row-label { text-align: left; color: var(--ink-soft); font-size: 0.72rem; padding-right: 12px; white-space: nowrap; }
+  .h0 { background: #f9f6fe; color: #ccc; }
+  .h1 { background: #e8d5f5; color: #6c3483; }
+  .h2 { background: #cc99e8; color: #4a1870; }
+  .h3 { background: #a569bd; color: #fff; }
+  .h4 { background: #7d3c98; color: #fff; }
+  .h5 { background: #5b2c6f; color: #fff; }
+  .heatmap-note { font-size: 0.72rem; color: var(--ink-mute); margin-top: 0.75rem; font-style: italic; }
+
+  /* COMP COMPARISON */
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.75rem; }
+  @media(max-width:500px){ .comp-grid{ grid-template-columns:1fr; } }
+  .comp-card { background: var(--paper-card); border: 1px solid var(--border); border-radius: 6px; padding: 1rem; }
+  .comp-role { font-size: 0.78rem; font-weight: 600; color: var(--ink); margin-bottom: 0.6rem; }
+  .comp-bar-group { display: flex; flex-direction: column; gap: 5px; }
+  .comp-row { display: flex; align-items: center; gap: 8px; }
+  .comp-label { font-size: 0.68rem; color: var(--ink-mute); width: 46px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  .comp-track { flex: 1; height: 12px; background: var(--paper-warm); border-radius: 2px; overflow: hidden; }
+  .comp-bar { height: 100%; border-radius: 2px; }
+  .comp-bar.stayed { background: var(--accent-mid); }
+  .comp-bar.left { background: var(--red); }
+  .comp-val { font-size: 0.67rem; color: var(--ink-mute); font-family: 'DM Mono', monospace; width: 42px; }
+
+  /* DECISION TREE */
+  .tree-box { background: var(--paper-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-top: 0.75rem; }
+  .tree-title { font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 1.25rem; }
+  .tree-node { display: flex; flex-direction: column; align-items: center; }
+  .node-box { background: var(--purple-light); border: 1.5px solid var(--purple-mid); border-radius: 6px; padding: 0.6rem 1rem; font-size: 0.78rem; color: var(--purple); font-weight: 600; text-align: center; max-width: 200px; }
+  .node-box.leaf-stay { background: var(--accent-light); border-color: var(--accent-mid); color: var(--accent-mid); }
+  .node-box.leaf-churn { background: var(--red-light); border-color: var(--red); color: var(--red); }
+  .tree-branch { display: flex; gap: 2rem; margin-top: 0; width: 100%; justify-content: center; }
+  .branch-side { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .branch-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--ink-mute); margin: 6px 0; }
+  .v-line { width: 1px; height: 20px; background: var(--border-strong); }
+  .h-line-wrap { display: flex; width: 60%; height: 1px; background: var(--border-strong); }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 0; margin-top: 0.75rem; }
+  .step { display: flex; gap: 1rem; position: relative; }
+  .step:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 1px; background: var(--border-strong); }
+  .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--purple-light); border: 1.5px solid var(--purple-mid); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500; color: var(--purple); flex-shrink: 0; }
+  .step-body { padding-bottom: 1.5rem; }
+  .step-body strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .step-body span { font-size: 0.82rem; color: var(--ink-mute); }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .card { background: var(--paper-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+  .card h3 { font-size: 0.75rem; font-family: 'DM Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 0.9rem; }
+  .meta-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-key { color: var(--ink-mute); }
+  .meta-val { color: var(--ink); font-weight: 500; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+  .tool-pill { display: inline-block; background: #eeeae0; border: 1px solid var(--border-strong); border-radius: 3px; padding: 3px 9px; font-size: 0.73rem; font-family: 'DM Mono', monospace; color: var(--ink-soft); margin: 3px; }
+  .outcome-list { display: flex; flex-direction: column; gap: 8px; }
+  .outcome-item { display: flex; align-items: flex-start; gap: 8px; font-size: 0.83rem; color: var(--ink-soft); }
+  .outcome-item::before { content: '→'; color: var(--purple-mid); font-weight: 600; flex-shrink: 0; }
+  .cta-block { background: #2c1654; border-radius: 8px; padding: 1.25rem; text-align: center; }
+  .cta-block p { color: rgba(255,255,255,0.6); font-size: 0.82rem; margin-bottom: 0.9rem; }
+  .cta-btn { display: inline-block; background: #fff; color: #2c1654; border-radius: 4px; padding: 0.55rem 1.1rem; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: opacity 0.15s; }
+  .cta-btn:hover { opacity: 0.85; }
+  .cta-btn.outline { background: transparent; border: 1px solid rgba(255,255,255,0.35); color: #fff; margin-top: 8px; display: block; }
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <a href="../../index.html">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Portfolio
+  </a>
+  <span class="sep">›</span>
+  <span class="current">Project 03 — HR & People Analytics</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-top">
+      <div>
+        <p class="eyebrow">Project 03 · HR & People Analytics</p>
+        <h1>Employee Attrition<br>Analysis</h1>
+        <p class="hero-company">Calloway Group — Professional Services, 1,400 Employees</p>
+      </div>
+      <div class="hero-badges">
+        <span class="badge">Python</span>
+        <span class="badge">Pandas</span>
+        <span class="badge">Scikit-learn</span>
+        <span class="badge">Seaborn</span>
+        <span class="badge">Decision Tree</span>
+      </div>
+    </div>
+    <p class="hero-desc">Calloway was losing experienced consultants faster than they could hire. HR didn't know if it was compensation, management, or workload. This project gives them data to make the case for change.</p>
+    <div class="hero-stats">
+      <div class="stat-cell"><div class="stat-val">23%</div><div class="stat-lbl">Overall attrition</div></div>
+      <div class="stat-cell"><div class="stat-val">$18K</div><div class="stat-lbl">Avg comp gap</div></div>
+      <div class="stat-cell"><div class="stat-val">3</div><div class="stat-lbl">Policy changes rec.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="content">
+
+    <div class="content-block">
+      <p class="block-label">The Problem</p>
+      <h2>Expensive Exits, Unknown Causes</h2>
+      <p>Calloway Group was spending an estimated $2.1M annually on attrition-related costs — recruiting, onboarding, and lost productivity. The consulting division was hardest hit, with a 31% annual turnover rate among mid-level managers.</p>
+      <p>HR had exit interviews but no systematic way to identify who was at risk before they started looking. Leadership was split: Finance suspected it was salary compression; Operations blamed overtime; HR thought it was poor management. This project settles the debate with data.</p>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Attrition by Department × Job Level</p>
+      <h2>Where the Problem Lives</h2>
+      <div class="heatmap-wrap">
+        <p class="heatmap-title">Attrition Rate Heatmap — Department × Job Level (%)</p>
+        <table class="heatmap-table">
+          <thead>
+            <tr>
+              <th></th><th>Level 1</th><th>Level 2</th><th>Level 3</th><th>Level 4</th><th>Level 5</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td class="row-label">Consulting</td><td class="h4">38</td><td class="h5">44</td><td class="h4">35</td><td class="h2">19</td><td class="h1">8</td></tr>
+            <tr><td class="row-label">Sales</td><td class="h3">29</td><td class="h3">31</td><td class="h2">22</td><td class="h1">11</td><td class="h0">4</td></tr>
+            <tr><td class="row-label">HR</td><td class="h2">18</td><td class="h1">14</td><td class="h1">10</td><td class="h0">5</td><td class="h0">2</td></tr>
+            <tr><td class="row-label">R&D</td><td class="h2">21</td><td class="h1">15</td><td class="h1">12</td><td class="h0">6</td><td class="h0">3</td></tr>
+            <tr><td class="row-label">Finance</td><td class="h1">12</td><td class="h1">10</td><td class="h0">7</td><td class="h0">4</td><td class="h0">1</td></tr>
+          </tbody>
+        </table>
+        <p class="heatmap-note">Darker purple = higher attrition. Consulting Level 2 (31–44%) is the single most critical retention risk in the organization.</p>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Compensation Gap Analysis</p>
+      <h2>What Leavers Were Paid vs. Stayers</h2>
+      <div class="comp-grid">
+        <div class="comp-card">
+          <div class="comp-role">Consulting — Level 2</div>
+          <div class="comp-bar-group">
+            <div class="comp-row">
+              <span class="comp-label">Stayed</span>
+              <div class="comp-track"><div class="comp-bar stayed" style="width:78%"></div></div>
+              <span class="comp-val">$87K</span>
+            </div>
+            <div class="comp-row">
+              <span class="comp-label">Left</span>
+              <div class="comp-track"><div class="comp-bar left" style="width:54%"></div></div>
+              <span class="comp-val">$61K</span>
+            </div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-role">Sales — Level 2</div>
+          <div class="comp-bar-group">
+            <div class="comp-row">
+              <span class="comp-label">Stayed</span>
+              <div class="comp-track"><div class="comp-bar stayed" style="width:70%"></div></div>
+              <span class="comp-val">$79K</span>
+            </div>
+            <div class="comp-row">
+              <span class="comp-label">Left</span>
+              <div class="comp-track"><div class="comp-bar left" style="width:57%"></div></div>
+              <span class="comp-val">$65K</span>
+            </div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-role">R&D — Level 3</div>
+          <div class="comp-bar-group">
+            <div class="comp-row">
+              <span class="comp-label">Stayed</span>
+              <div class="comp-track"><div class="comp-bar stayed" style="width:84%"></div></div>
+              <span class="comp-val">$95K</span>
+            </div>
+            <div class="comp-row">
+              <span class="comp-label">Left</span>
+              <div class="comp-track"><div class="comp-bar left" style="width:72%"></div></div>
+              <span class="comp-val">$81K</span>
+            </div>
+          </div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-role">HR — Level 1</div>
+          <div class="comp-bar-group">
+            <div class="comp-row">
+              <span class="comp-label">Stayed</span>
+              <div class="comp-track"><div class="comp-bar stayed" style="width:48%"></div></div>
+              <span class="comp-val">$54K</span>
+            </div>
+            <div class="comp-row">
+              <span class="comp-label">Left</span>
+              <div class="comp-track"><div class="comp-bar left" style="width:44%"></div></div>
+              <span class="comp-val">$50K</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:0.75rem;font-size:0.78rem;color:var(--ink-mute);font-style:italic;">Compensation gap is largest and most predictive in Consulting and Sales mid-levels — not an HR or Finance problem.</p>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Methodology</p>
+      <h2>How It Was Built</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Exploratory Analysis (Pandas + Seaborn)</strong>
+            <span>Calculated attrition rates across all 35 features. Built the department × job level heatmap to surface the highest-risk pockets. Found overtime alone increased attrition probability by 2.3×.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Compensation Gap Analysis</strong>
+            <span>Compared monthly income distributions between employees who left vs. stayed, by role and level. Ran a Mann-Whitney U test to confirm the compensation gaps were statistically significant (p &lt; 0.01) in Consulting and Sales.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Decision Tree Classifier (Scikit-learn)</strong>
+            <span>Trained a decision tree (max depth 4) on 80% of records. Achieved 86% accuracy on the test set. Exported and annotated the tree to show HR leadership the exact decision logic in plain English — no ML knowledge required.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>3-Slide Executive Brief</strong>
+            <span>Problem → Findings → Recommendations. Three policy changes: adjust Consulting Level 2 compensation band, cap overtime requirement, and introduce 90-day manager check-ins for new hires in high-risk departments.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="sidebar">
+    <div class="card">
+      <h3>Project Details</h3>
+      <div class="meta-row"><span class="meta-key">Dataset</span><span class="meta-val">IBM HR Analytics</span></div>
+      <div class="meta-row"><span class="meta-key">Rows</span><span class="meta-val">1,470</span></div>
+      <div class="meta-row"><span class="meta-key">Features</span><span class="meta-val">35 attributes</span></div>
+      <div class="meta-row"><span class="meta-key">Specialty</span><span class="meta-val">People Analytics</span></div>
+      <div class="meta-row"><span class="meta-key">Duration</span><span class="meta-val">~2 weeks</span></div>
+    </div>
+    <div class="card">
+      <h3>Tools Used</h3>
+      <div>
+        <span class="tool-pill">Python</span><span class="tool-pill">Pandas</span><span class="tool-pill">Seaborn</span><span class="tool-pill">Scikit-learn</span><span class="tool-pill">Matplotlib</span><span class="tool-pill">SciPy</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Business Outcomes</h3>
+      <div class="outcome-list">
+        <div class="outcome-item">Consulting Level 2 comp band revised upward</div>
+        <div class="outcome-item">Overtime policy capped for at-risk roles</div>
+        <div class="outcome-item">90-day check-in program launched in Q2</div>
+        <div class="outcome-item">Attrition model integrated into HRIS</div>
+      </div>
+    </div>
+    <div class="cta-block">
+      <p>Full notebook and decision tree diagram on GitHub</p>
+      <a href="#" class="cta-btn">View on GitHub ↗</a>
+      <a href="#" class="cta-btn outline">View Notebook ↗</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -4,7 +4,7 @@
 
 [![GitHub Pages](https://img.shields.io/badge/Live%20Site-GitHub%20Pages-1a3a2a?style=flat-square)](https://powellot.github.io)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=flat-square&logo=linkedin)](https://linkedin.com/in/powellot)
-[![Email](https://img.shields.io/badge/Email-powellot.dev%40gmail.com-c8943a?style=flat-square)](mailto:powellot.dev@gmail.com)
+[![Email](https://img.shields.io/badge/Email-you%40email.com-c8943a?style=flat-square)](mailto:powellot.dev@gmail.com)
 
 ---
 

@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian Office Co. — Sales & BI Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0f0e0c; --ink-soft: #4a4742; --ink-mute: #8a877f;
+    --paper: #f7f5f0; --paper-warm: #eeeae0; --paper-card: #fff;
+    --accent: #1a3a2a; --accent-mid: #2d6048; --accent-light: #e8f0ec;
+    --gold: #c8943a; --gold-light: #fdf4e7;
+    --border: rgba(15,14,12,0.12); --border-strong: rgba(15,14,12,0.22);
+    --red: #c0392b; --red-light: #fdf0ef;
+    --green: #27ae60; --green-light: #edfbf2;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Outfit', sans-serif; background: var(--paper); color: var(--ink); line-height: 1.65; }
+
+  /* ── BACK NAV ── */
+  .back-bar {
+    background: var(--paper-card);
+    border-bottom: 1px solid var(--border);
+    padding: 0.7rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .back-bar a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.15s;
+  }
+  .back-bar a:hover { color: var(--accent-mid); }
+  .back-bar .sep { color: var(--border-strong); font-size: 10px; }
+  .back-bar .current { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--ink-soft); letter-spacing: 0.08em; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--accent);
+    padding: 4rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '01';
+    position: absolute;
+    right: -0.5rem; bottom: -2rem;
+    font-family: 'DM Serif Display', serif;
+    font-size: 14rem;
+    color: rgba(255,255,255,0.04);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .hero-inner { max-width: 860px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-top { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem; }
+  .eyebrow { font-family: 'DM Mono', monospace; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 0.75rem; }
+  .hero h1 { font-family: 'DM Serif Display', serif; font-size: clamp(1.9rem, 5vw, 3rem); font-weight: 400; color: #fff; line-height: 1.1; margin-bottom: 0.5rem; }
+  .hero-company { font-size: 0.9rem; color: rgba(255,255,255,0.55); font-style: italic; }
+  .hero-badges { display: flex; flex-wrap: wrap; gap: 7px; }
+  .badge { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 3px; padding: 4px 10px; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: rgba(255,255,255,0.8); }
+  .badge.gold { background: rgba(200,148,58,0.25); border-color: rgba(200,148,58,0.4); color: #f0c97a; }
+  .hero-desc { font-size: 1rem; color: rgba(255,255,255,0.65); max-width: 560px; font-weight: 300; margin-bottom: 2rem; }
+  .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; max-width: 440px; }
+  .stat-cell { background: rgba(255,255,255,0.06); padding: 1.1rem 1.25rem; }
+  .stat-val { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .stat-lbl { font-size: 0.72rem; color: rgba(255,255,255,0.5); font-family: 'DM Mono', monospace; letter-spacing: 0.06em; }
+
+  /* ── MAIN LAYOUT ── */
+  .main { max-width: 860px; margin: 0 auto; padding: 3rem 2rem; display: grid; grid-template-columns: 1fr 300px; gap: 2.5rem; align-items: start; }
+  @media(max-width:700px){ .main{ grid-template-columns:1fr; } }
+
+  /* ── CONTENT ── */
+  .content-block { margin-bottom: 2.5rem; }
+  .block-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 0.6rem; }
+  h2 { font-family: 'DM Serif Display', serif; font-size: 1.45rem; font-weight: 400; color: var(--ink); margin-bottom: 0.9rem; }
+  p { color: var(--ink-soft); margin-bottom: 0.9rem; font-size: 0.95rem; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── FINDINGS ── */
+  .findings { display: flex; flex-direction: column; gap: 10px; margin-top: 0.75rem; }
+  .finding {
+    display: flex; gap: 1rem; align-items: flex-start;
+    background: var(--paper-card); border: 1px solid var(--border);
+    border-radius: 6px; padding: 1rem 1.1rem;
+  }
+  .finding-icon { width: 32px; height: 32px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .finding-icon.red { background: var(--red-light); }
+  .finding-icon.green { background: var(--green-light); }
+  .finding-icon.gold { background: var(--gold-light); }
+  .finding-icon svg { width: 16px; height: 16px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .finding-icon.red svg { stroke: var(--red); }
+  .finding-icon.green svg { stroke: var(--green); }
+  .finding-icon.gold svg { stroke: var(--gold); }
+  .finding-text strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .finding-text span { font-size: 0.82rem; color: var(--ink-mute); }
+
+  /* ── CHART MOCKUPS ── */
+  .chart-area {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-top: 0.75rem;
+  }
+  .chart-title { font-size: 0.8rem; font-weight: 600; color: var(--ink); margin-bottom: 1rem; }
+  .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: var(--ink-mute); width: 90px; flex-shrink: 0; text-align: right; }
+  .bar-track { flex: 1; height: 20px; background: var(--paper-warm); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; display: flex; align-items: center; padding-right: 6px; justify-content: flex-end; }
+  .bar-fill.pos { background: var(--accent-mid); }
+  .bar-fill.neg { background: var(--red); }
+  .bar-val { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: #fff; font-weight: 500; }
+  .chart-note { font-size: 0.72rem; color: var(--ink-mute); margin-top: 0.75rem; font-style: italic; }
+
+  /* ── PROCESS STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 0; margin-top: 0.75rem; }
+  .step { display: flex; gap: 1rem; position: relative; }
+  .step:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 1px; background: var(--border-strong); }
+  .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-light); border: 1.5px solid var(--accent-mid); display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 0.7rem; font-weight: 500; color: var(--accent-mid); flex-shrink: 0; }
+  .step-body { padding-bottom: 1.5rem; }
+  .step-body strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .step-body span { font-size: 0.82rem; color: var(--ink-mute); }
+
+  /* ── SIDEBAR ── */
+  .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+  .card { background: var(--paper-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; }
+  .card h3 { font-size: 0.75rem; font-family: 'DM Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 0.9rem; }
+  .meta-row { display: flex; justify-content: space-between; align-items: baseline; padding: 0.4rem 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-key { color: var(--ink-mute); }
+  .meta-val { color: var(--ink); font-weight: 500; font-family: 'DM Mono', monospace; font-size: 0.78rem; }
+  .tool-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tool-pill { background: var(--tag-bg, #eeeae0); border: 1px solid var(--border-strong); border-radius: 3px; padding: 3px 9px; font-size: 0.73rem; font-family: 'DM Mono', monospace; color: var(--ink-soft); }
+  .outcome-list { display: flex; flex-direction: column; gap: 8px; }
+  .outcome-item { display: flex; align-items: flex-start; gap: 8px; font-size: 0.83rem; color: var(--ink-soft); }
+  .outcome-item::before { content: '→'; color: var(--accent-mid); font-weight: 600; flex-shrink: 0; }
+  .cta-block { background: var(--accent); border-radius: 8px; padding: 1.25rem; text-align: center; }
+  .cta-block p { color: rgba(255,255,255,0.65); font-size: 0.82rem; margin-bottom: 0.9rem; }
+  .cta-btn { display: inline-block; background: #fff; color: var(--accent); border-radius: 4px; padding: 0.55rem 1.1rem; font-size: 0.82rem; font-weight: 600; text-decoration: none; transition: opacity 0.15s; }
+  .cta-btn:hover { opacity: 0.85; }
+  .cta-btn.outline { background: transparent; border: 1px solid rgba(255,255,255,0.35); color: #fff; margin-top: 8px; display: block; }
+</style>
+</head>
+<body>
+
+<div class="back-bar">
+  <a href="../../index.html">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Portfolio
+  </a>
+  <span class="sep">›</span>
+  <span class="current">Project 01 — Sales & BI Dashboard</span>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-top">
+      <div>
+        <p class="eyebrow">Project 01 · Sales & Business Intelligence</p>
+        <h1>Sales Performance<br>Dashboard</h1>
+        <p class="hero-company">Meridian Office Co. — U.S. Office Supply Retailer</p>
+      </div>
+      <div class="hero-badges">
+        <span class="badge">SQL</span>
+        <span class="badge">Python</span>
+        <span class="badge">Tableau</span>
+        <span class="badge">ETL</span>
+        <span class="badge gold">Featured</span>
+      </div>
+    </div>
+    <p class="hero-desc">Meridian's VP of Sales suspected certain products and regions were dragging down margin — but leadership only saw top-line revenue. This project surfaces exactly where the business makes and loses money.</p>
+    <div class="hero-stats">
+      <div class="stat-cell"><div class="stat-val">92%</div><div class="stat-lbl">Report time saved</div></div>
+      <div class="stat-cell"><div class="stat-val">3</div><div class="stat-lbl">Profit killers ID'd</div></div>
+      <div class="stat-cell"><div class="stat-val">$47K</div><div class="stat-lbl">Est. margin recovered</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="content">
+
+    <div class="content-block">
+      <p class="block-label">The Problem</p>
+      <h2>Revenue ≠ Profit</h2>
+      <p>Meridian Office Co. was reporting strong top-line sales growth, but overall margins had quietly compressed by 4 points over 18 months. The VP of Sales had a hunch: aggressive discounting in certain sub-categories was eating into profit faster than volume could compensate.</p>
+      <p>The challenge was that existing reporting only showed revenue by region — it couldn't isolate where discounts were being applied, or which product lines were structurally unprofitable. Leadership needed a single view that told the full story.</p>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Key Findings</p>
+      <h2>Where the Money Was Going</h2>
+      <div class="findings">
+        <div class="finding">
+          <div class="finding-icon red">
+            <svg viewBox="0 0 24 24"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/><polyline points="17 18 23 18 23 12"/></svg>
+          </div>
+          <div class="finding-text">
+            <strong>Tables (Furniture) lost money in every region</strong>
+            <span>Despite $200K+ in revenue, Tables posted a –$18K net loss across all regions — discount rates averaged 31%, wiping out all gross margin.</span>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-icon green">
+            <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="finding-text">
+            <strong>Office Supplies drove 68% of total profit on 41% of revenue</strong>
+            <span>Paper, binders, and storage products had minimal discounting and high repeat purchase rates — the true engine of the business.</span>
+          </div>
+        </div>
+        <div class="finding">
+          <div class="finding-icon gold">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div class="finding-text">
+            <strong>The Central region over-discounted by 11 percentage points</strong>
+            <span>Same products, same cost structure — but Central's reps were offering an average 26% discount vs. 15% in the West, for no measurable lift in volume.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Profit Margin by Sub-Category</p>
+      <h2>The Breakdown</h2>
+      <div class="chart-area">
+        <p class="chart-title">Net Profit Margin % by Sub-Category (selected)</p>
+        <div class="bar-chart">
+          <div class="bar-row">
+            <span class="bar-label">Paper</span>
+            <div class="bar-track"><div class="bar-fill pos" style="width:78%"><span class="bar-val">+34%</span></div></div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Binders</span>
+            <div class="bar-track"><div class="bar-fill pos" style="width:62%"><span class="bar-val">+26%</span></div></div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Storage</span>
+            <div class="bar-track"><div class="bar-fill pos" style="width:44%"><span class="bar-val">+18%</span></div></div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Chairs</span>
+            <div class="bar-track"><div class="bar-fill pos" style="width:24%"><span class="bar-val">+9%</span></div></div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Bookcases</span>
+            <div class="bar-track"><div class="bar-fill neg" style="width:18%"><span class="bar-val">–7%</span></div></div>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">Tables</span>
+            <div class="bar-track"><div class="bar-fill neg" style="width:40%"><span class="bar-val">–17%</span></div></div>
+          </div>
+        </div>
+        <p class="chart-note">Source: Kaggle Superstore Dataset. Visualization recreated from Tableau dashboard.</p>
+      </div>
+    </div>
+
+    <div class="content-block">
+      <p class="block-label">Methodology</p>
+      <h2>How It Was Built</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Data Cleaning (SQL + Pandas)</strong>
+            <span>Standardized date formats, removed 142 duplicate order IDs, corrected negative profit records caused by return-without-refund entries, and unified product category naming across 3 source files.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Exploratory Analysis (Python)</strong>
+            <span>Calculated profit margin at Order → Sub-Category → Region granularity. Ran correlation analysis between discount rate and profit margin (r = –0.71) to quantify the discount problem.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Dashboard Build (Tableau)</strong>
+            <span>Four-view dashboard: regional profit map, category waterfall chart, discount vs. profit scatter plot, and a YoY trend line with forecast. Designed for weekly review by the VP of Sales.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Recommendations Delivered</strong>
+            <span>One-page executive brief: cap furniture discounts at 15%, flag Central region reps for discount coaching, and shift Q4 promotional spend to high-margin Office Supplies.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="card">
+      <h3>Project Details</h3>
+      <div class="meta-row"><span class="meta-key">Dataset</span><span class="meta-val">Kaggle Superstore</span></div>
+      <div class="meta-row"><span class="meta-key">Rows</span><span class="meta-val">9,994</span></div>
+      <div class="meta-row"><span class="meta-key">Time Period</span><span class="meta-val">2014 – 2017</span></div>
+      <div class="meta-row"><span class="meta-key">Specialty</span><span class="meta-val">BI / Dashboards</span></div>
+      <div class="meta-row"><span class="meta-key">Duration</span><span class="meta-val">~3 weeks</span></div>
+    </div>
+
+    <div class="card">
+      <h3>Tools Used</h3>
+      <div class="tool-grid">
+        <span class="tool-pill">Python</span>
+        <span class="tool-pill">Pandas</span>
+        <span class="tool-pill">SQL</span>
+        <span class="tool-pill">Tableau</span>
+        <span class="tool-pill">Seaborn</span>
+        <span class="tool-pill">Jupyter</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Business Outcomes</h3>
+      <div class="outcome-list">
+        <div class="outcome-item">Reporting cycle cut from 3 days to 2 hours</div>
+        <div class="outcome-item">Tables sub-category flagged for pricing review</div>
+        <div class="outcome-item">Central region discount policy revised</div>
+        <div class="outcome-item">$47K estimated margin recovery in Q1</div>
+      </div>
+    </div>
+
+    <div class="cta-block">
+      <p>View the full notebook and dashboard on GitHub</p>
+      <a href="#" class="cta-btn">View on GitHub ↗</a>
+      <a href="#" class="cta-btn outline">Tableau Dashboard ↗</a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
